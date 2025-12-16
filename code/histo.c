@@ -121,7 +121,7 @@ A insertionAVL(A a, char* id, float val, float fuite, int *h) {
         a->fd = insertionAVL(a->fd, id, val, fuite, h);
     } 
     else{
-        a->v += val; 
+        a->v += val*((100.0-fuite)/100.0); 
         *h = 0;
         return a;
     }
@@ -181,6 +181,7 @@ int main(){
         id[strcspn(id, "\r")] = 0; 
         avl = insertionAVL(avl, id, nb, fuites, &h);
     }   
+    afficherInfixe(avl);
     write_Infixe(avl, result_nom, result_val);
     supp_jspfixe(avl);
     fclose(nom);
