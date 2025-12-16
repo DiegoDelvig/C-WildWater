@@ -4,10 +4,9 @@ typedef struct Troncon {
 	struct Troncon_Enfant *suivant;
 } Troncon;
 
-typedef struct Arbre {
+typedef struct arbre {
 	char *id_arbre;            
-	char *id_parent;      
-	int eq;
+	char *id_parent;     
   
 	double volume;      
 	double volume_perdu;
@@ -21,9 +20,9 @@ typedef struct avl {
 	char *id_arbre;          
 	Arbre *adresse_a;  
     
-	int hauteur;                  
-	struct avl *gauche;
-	struct avl *droite;
+	int eq;                  
+	struct avl *fg;
+	struct avl *fd;
 } Avl;
 
 Avl* creer_avl(const char *id_arbre, Arbre *adresse_a) {
@@ -39,9 +38,9 @@ Avl* creer_avl(const char *id_arbre, Arbre *adresse_a) {
     	}
 
     	nv_noeud->adresse_a = adresse_a;
-    	nv_noeud->gauche = NULL;
-    	nv_noeud->droite = NULL;
-    	nv_noeud->hauteur = 1;
+    	nv_noeud->fg = NULL;
+    	nv_noeud->fd = NULL;
+    	nv_noeud->eq = 0;
     
     	return nv_noeud;
 }
@@ -54,9 +53,9 @@ Arbre* rechercher_avl(Avl *racine, const char *id_arbre) {
     int cmp = strcmp(id_arbre, racine->id_arbre);
 
     if (cmp < 0) {
-        return rechercher_avl(racine->gauche, id_arbre);
+        return rechercher_avl(racine->fg, id_arbre);
     } else if (cmp > 0) {
-        return rechercher_avl(racine->droite, id_arbre);
+        return rechercher_avl(racine->fd, id_arbre);
     } else {
         return racine->adresse_a;
     }
@@ -66,7 +65,13 @@ int max(int a, int b){
 	if(a>b){
 		return a;
 	}
-	return b
+	return b;
+}
+int min(int a, int b){
+	if(a<b){
+		return a;
+	}
+	return b;
 }
 
 Avl* rotationDroite(Avl* a) {
@@ -106,16 +111,24 @@ Avl* doubleRotationDroite(Avl* a) {
 
 Avl* equilibrerAVL(Avl* a) {
     if (a->eq >= 2) {
-        if (a->fd->eq >= 0)
-            return rotationGauche(a);
-        else
-            return doubleRotationGauche(a);
-    } 
+    	if(a->fd!=NULL){
+        	if (a->fd->eq >= 0){
+            		return rotationGauche(a);
+            	}
+        	else{
+            		return doubleRotationGauche(a);
+            	}
+    	} 
+    }
     else if (a->eq <= -2) {
-        if (a->fg->eq <= 0)
-            return rotationDroite(a);
-        else
-            return doubleRotationDroite(a);
+    	if(a->fg!=NULL){
+        	if (a->fg->eq <= 0){
+            		return rotationDroite(a);
+            	}
+        	else{
+            		return doubleRotationDroite(a);
+            	}
+    	}
     }
     return a;
 }
@@ -130,11 +143,11 @@ Arbre* creer_arbre(const char *id, const char *id_usine) {
         	return NULL;
     	}
     	nv->id_arbre = strdup(id);
-    	nv->id_usine = strdup(id_usine);
+    	nv->id_parent = strdup(id_usine);
     
-    	if (nv->id_arbre == NULL || nv->id_usine == NULL) {
+    	if (nv->id_arbre == NULL || nv->id_parent == NULL) {
        		free(nv->id_arbre);
-        	free(nv->id_usine);
+        	free(nv->id_parent);
         	free(nv);
         	return NULL;
     	}
