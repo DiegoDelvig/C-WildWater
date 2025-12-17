@@ -1,11 +1,23 @@
-EXECUTABLE = c-wildwater
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99
 
-src: $(EXECUTABLE)
+EXEC = c-wildwater
 
-$(EXECUTABLE): code/histo.c
-	@echo "Compilation du programme"
-	gcc -o $(EXECUTABLE) code/histo.c
-	@echo "Compilation réussi: Executable ./"$(EXECUTABLE)
+SRC_DIR = code
+
+SRC = $(wildcard $(SRC_DIR)/*.c)
+
+OBJ = $(SRC:.c=.o)
+
+all: $(EXEC)
+
+$(EXEC): $(OBJ)
+	$(CC) $(OBJ) -o $(EXEC)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(EXECUTABLE) a.out
+	rm -f $(OBJ) $(EXEC)
+
+.PHONY: all clean
