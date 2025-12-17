@@ -1,60 +1,81 @@
-#include "Biblio_lin.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include "histo.h"
+
+#define FILE_IN_NAME "tests/histo_nom.txt"
+#define FILE_IN_QTY "tests/histo_quantite.txt"
+#define FILE_IN_LEAK "tests/histo_fuite.txt"
+#define FILE_OUT_NOM "tests/histo_nom_result.txt"
+#define FILE_OUT_QTY "tests/histo_quantite_result.txt"
+
 typedef struct Avl{
-    char id[20];
+    char id[256];
     float v;
     int eq;
     struct Avl* fg;
     struct Avl* fd;
-}Avl;
+} Avl;
 typedef Avl* A;
-int researche(A a, char* id){
-    A p=a;
-    if(a==NULL){
-        return -1;
-    }
-    if(strcmp(a->id,id)==0){
-        return 1;
-    }
-    if(strcmp(a->id,id)>0){
-        return researche(a->fd, id);
-    }
-    else{
-        return researche(a->fg, id);
-    }
-}
+
+typedef struct {
+    char id[256];
+    double val;
+} Arr;
+
 float min(float a, float b){
     if(a<b){
         return a;
     }
     return b;
 }
+
 float max(float a, float b){
     if(a>b){
         return a;
     }
     return b;
 }
-A crea_noeud(float val, char* id, float fuite){
+
+int getHauteur(A a) {
+    if (a == NULL) {
+        return 0;
+    }
+    return a->eq;
+}
+
+int calculEq(A a) {
+    if (a == NULL) {
+        return 0;
+    }
+    return (getHauteur(a->fd) - getHauteur(a->fg));
+}
+
+int existefg(A a){
+    if(a != NULL && a->fg != NULL){
+        return 1;
+    }
+    return -1;
+}
+
+int existefd(A a){
+    if(a != NULL && a->fd != NULL){
+        return 1;
+    }
+    return -1;
+}
+
+A crea_noeud(float val, char* id){
     A new=malloc(sizeof(Avl));
-    new->v=val*((100.0-fuite)/100.0);
-    new->eq=0;
     strcpy(new->id, id);
-    new->fg=NULL;
-    new->fd=NULL;
+    new->v = val;
+    new->eq = 0;
+    new->fg = NULL;
+    new->fd = NULL;
     return new;
 }
-int existefg(A a){
-    if(a!=NULL && a->fg!=NULL){
-        return 1;
-    }
-    return -1;
-}
-int existefd(A a){
-    if(a!=NULL && a->fd!=NULL){
-        return 1;
-    }
-    return -1;
-}
+
 A rotationDroite(A a) {
     A pivot;
     int eq_a, eq_p;
@@ -106,85 +127,119 @@ A equilibrerAVL(A a) {
     }
     return a;
 }
-A insertionAVL(A a, char* id, float val, float fuite, int *h) {
-    if(a == NULL){
-        *h = 1;
-        return crea_noeud(val, id, fuite);
+
+A insert(A avl, char *id, double val) {
+    if (avl == NULL) {
+        return crea_noeud(val, id);
     }
 
-    int cmp = strcmp(id, a->id);
-    if(cmp < 0){
-        a->fg = insertionAVL(a->fg, id, val, fuite, h);
-        *h = -*h;
-    } 
-    else if (cmp > 0){
-        a->fd = insertionAVL(a->fd, id, val, fuite, h);
-    } 
-    else{
-        a->v += val*((100.0-fuite)/100.0); 
-        *h = 0;
-        return a;
-    }
-    if(*h != 0){
-        a->eq = a->eq + *h;
-        if (a->eq == 0) *h = 0;
-        else *h = 1;
+    int cmp = strcmp(id, avl->id);
 
-        if (a->eq < -1 || a->eq > 1) {
-            a = equilibrerAVL(a);
-            if (a->eq == 0) *h = 0;
-            else *h = 1; 
-        }
+    if (cmp < 0) {
+        avl->fg = insert(avl->fg, id, val);
+    } else if (cmp > 0) {
+        avl->fd = insert(avl->fd, id, val);
+    } else {
+        avl->v += val;
+        return avl;
     }
-    return a;
+
+    return equilibrerAVL(avl);
 }
-void afficherInfixe(A a){
-    if (a != NULL) {
-        afficherInfixe(a->fg);
-        printf("ID: %s (Val: %f, Eq: %d)\n", a->id, a->v, a->eq);
-        afficherInfixe(a->fd);
-    }
-}
-void supp_jspfixe(A a){
-    if(a!=NULL){
-        supp_jspfixe(a->fg);
-        supp_jspfixe(a->fd);
-        free(a);
+
+void countAVL(A avl, int *count) {
+    if (avl != NULL) {
+        countAVL(avl->fg, count);
+        (*count)++;
+        countAVL(avl->fd, count);
     }
 }
-void write_Infixe(A a, FILE* name, FILE* val){
-    if (a != NULL) {
-        write_Infixe(a->fg, name, val);
-        fprintf(name, "%s\n", a->id); 
-        fprintf(val, "%f\n", a->v);
-        write_Infixe(a->fd, name, val);
+
+void fillArray(A avl, Arr *arr, int *index) {
+    if (avl != NULL) {
+        fillArray(avl->fg, arr, index);
+        strcpy(arr[*index].id, avl->id);
+        arr[*index].val = avl->v;
+        (*index)++;
+        fillArray(avl->fd, arr, index);
     }
 }
-int main(){
-    FILE *nom = fopen("tests/histo_nom.txt", "r");
-    FILE *val = fopen("tests/histo_quantite.txt", "r");
-    FILE *fuite = fopen("tests/histo_fuite.txt", "r");
-    FILE *result_nom = fopen("tests/histo_nom_result.txt", "w");
-    FILE *result_val = fopen("tests/histo_quantite_result.txt", "w");
-    if(nom == NULL || val == NULL){
-        printf("Erreur d'ouverture des fichiers.\n");
-        return 1;
+
+void freeAvl(A avl) {
+    if (avl != NULL) {
+        freeAvl(avl->fg);
+        freeAvl(avl->fd);
+        free(avl);
     }
-    float nb;
-    char id[20];
+}
+
+void traiter_histo(char *mode) {
+    printf("Traitement hist %s\n", mode);
+
+    FILE *f_name = fopen(FILE_IN_NAME, "r");
+    FILE *f_qty = fopen(FILE_IN_QTY, "r");
+    FILE *f_leak = fopen(FILE_IN_LEAK, "r");
+
+    if (!f_name || !f_qty) {
+        printf("Impossible d'ouvrir les fichiers\n");
+        exit(1);
+    }
+
     A avl = NULL;
-    int h = 0;
-    float fuites;
-    while(fscanf(val, "%f", &nb) == 1 && fscanf(fuite, "%f", &fuites) == 1) {
-        fgets(id, 19, nom);
-        id[strcspn(id, "\n")] = 0; 
-        id[strcspn(id, "\r")] = 0; 
-        avl = insertionAVL(avl, id, nb, fuites, &h);
-    }   
-    afficherInfixe(avl);
-    write_Infixe(avl, result_nom, result_val);
-    supp_jspfixe(avl);
-    fclose(nom);
-    fclose(val);
-    return 0;
+    char bufferName[256];
+    char bufferQty[256];
+    char bufferLeak[256];
+    double qte, leak, res;
+
+    while (fgets(bufferName, 256, f_name) && fgets(bufferQty, 256, f_qty)) {
+        bufferName[strcspn(bufferName, "\n")] = 0;
+        qte = atof(bufferQty);
+        leak = atof(bufferLeak);
+
+        if (strcmp(mode, "real") == 0) {
+            res = qte * (1.0 - (leak / 100.0));
+
+            if (res < 0) {
+                res = 0;
+            }
+        } else {
+            res = qte;
+        }
+        avl = insert(avl, bufferName, res);
+    }
+    fclose(f_name);
+    fclose(f_qty);
+    fclose(f_leak);
+
+    int count = 0;
+    countAVL(avl, &count);
+
+    if (count == 0) {
+        printf("Erreur\n");
+        return;
+    }
+
+    Arr *arr = malloc(count * sizeof(Arr));
+    int index = 0;
+    fillArray(avl, arr, &index);
+
+    FILE *f_res_name = fopen(FILE_OUT_NOM, "w");
+    FILE *f_res_qty = fopen(FILE_OUT_QTY, "w");
+
+    if (!f_res_name || !f_res_qty) {
+        printf("Erreur dans la creation des fichiers\n");
+        free(arr);
+        freeAvl(avl);
+        exit(1);
+    }
+
+    for (int i = 0; i < count; i++) {
+        fprintf(f_res_name, "%s\n", arr[i].id);
+        fprintf(f_res_qty, "%f\n", arr[i].val);
+    }
+
+    fclose(f_res_name);
+    fclose(f_res_qty);
+    free(arr);
+    freeAvl(avl);
 }
