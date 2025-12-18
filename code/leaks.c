@@ -159,7 +159,7 @@ A insertionAVL(A a, char* id, float val, float fuite, int *h, Ab parent, int cas
 void supp_fixe(A a){
     if(a!=NULL){
         supp_fixe(a->fg);
-        supp_jfixe(a->fd);
+        supp_fixe(a->fd);
         free(a->ab);
         free(a);
     }
