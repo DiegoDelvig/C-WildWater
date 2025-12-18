@@ -130,8 +130,6 @@ A insertionAVL(A a, char* id, float val, float fuite, int *h, Ab parent, int cas
     int cmp = strcmp(id, a->id);
     if(cmp == 0) { 
         *h = 0;
-        a->ab->v+=val;
-        a->ab->fuite
         if(retour != NULL){
             *retour = a; 
         }
@@ -180,7 +178,7 @@ A researche(A a, char* id){
     }
 }
 void write(char* id, float somme_leaks, FILE* nom, FILE* value){
-    if(a!=NULL){
+    if(id!=NULL){
         fprintf(nom, "%s\n", id); 
         fprintf(value, "%f\n", somme_leaks);
     }
@@ -236,10 +234,6 @@ int main(){
         id_enfant[strcspn(id_enfant, "\n")] = 0; 
         id_enfant[strcspn(id_enfant, "\r")] = 0; 
         avl=insertionAVL(avl, id_parent, nb, fuites, &h, NULL, 1, &pparent);
-        if(i==0){
-            avl_top=avl;
-        }
-        i=1;
         if(pparent != NULL){
             avl = insertionAVL(avl, id_enfant, nb, fuites, &h, pparent->ab, 2, NULL);
         }
