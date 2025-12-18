@@ -32,6 +32,7 @@ Ab ab_crea_noeud(float val, char* id, float fuite, int cas){
     strcpy(new_ab->id, id);
     if(cas==1){
         new_ab->v=val;
+        new_ab->fuite=0.0;
         new_ab->bro=NULL;
         new_ab->son=NULL;
         return new_ab;
@@ -155,10 +156,10 @@ A insertionAVL(A a, char* id, float val, float fuite, int *h, Ab parent, int cas
     }
     return a;
 }
-void supp_jspfixe(A a){
+void supp_fixe(A a){
     if(a!=NULL){
-        supp_jspfixe(a->fg);
-        supp_jspfixe(a->fd);
+        supp_fixe(a->fg);
+        supp_jfixe(a->fd);
         free(a->ab);
         free(a);
     }
@@ -256,7 +257,7 @@ int main(int argc, char* argv[]){
         write(id, somme, result_nom, result_val);
     }
     else{
-        supp_jspfixe(avl);
+        supp_fixe(avl);
         fclose(nom_parent);
         fclose(nom_enfant);
         fclose(val);
@@ -265,7 +266,7 @@ int main(int argc, char* argv[]){
         fclose(result_val);
         return 1;
     }
-    supp_jspfixe(avl);
+    supp_fixe(avl);
     fclose(nom_parent);
     fclose(nom_enfant);
     fclose(val);
