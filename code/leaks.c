@@ -31,7 +31,7 @@ Ab ab_crea_noeud(float val, char* id, float fuite, int cas){
     Ab new_ab=malloc(sizeof(Arbre));
     strcpy(new_ab->id, id);
     if(cas==1){
-        new_ab->v=0;
+        new_ab->v=val;
         new_ab->bro=NULL;
         new_ab->son=NULL;
         return new_ab;
@@ -207,7 +207,7 @@ void somme_leak(Ab ab, float volume, float* total){
     }
     return;
 }
-int main(){
+int main(int argc, char* argv[]){
     FILE *nom_parent = fopen("tests/leak_nom_parent.txt", "r");
     FILE *nom_enfant = fopen("tests/leak_nom_enfant.txt", "r");
     FILE *val = fopen("tests/leak_quantite.txt", "r");
@@ -216,6 +216,16 @@ int main(){
     FILE *result_val = fopen("tests/leak_quantite_result_fuite.txt", "w");
     if(nom_parent == NULL || val == NULL || nom_enfant == NULL || fuite == NULL){
         printf("Erreur d'ouverture des fichiers.\n");
+        return 1;
+    }
+    if(argc<2){
+        printf("\nerreur d'argument");
+        fclose(nom_parent);
+        fclose(nom_enfant);
+        fclose(val);
+        fclose(fuite);
+        fclose(result_nom);
+        fclose(result_val);
         return 1;
     }
     float nb;
@@ -238,7 +248,7 @@ int main(){
             avl = insertionAVL(avl, id_enfant, nb, fuites, &h, pparent->ab, 2, NULL);
         }
     }   
-    char id[20];
+    char* id=argv[1];
     A usine=researche(avl, id);
     if(usine!=NULL){
         float somme=0;
@@ -247,7 +257,13 @@ int main(){
     }
     else{
         supp_jspfixe(avl);
-        return -1;
+        fclose(nom_parent);
+        fclose(nom_enfant);
+        fclose(val);
+        fclose(fuite);
+        fclose(result_nom);
+        fclose(result_val);
+        return 1;
     }
     supp_jspfixe(avl);
     fclose(nom_parent);
@@ -256,6 +272,5 @@ int main(){
     fclose(fuite);
     fclose(result_nom);
     fclose(result_val);
-    return 0;
     return 0;
 }
