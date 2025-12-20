@@ -168,40 +168,64 @@ elif [ $COMMAND == "leaks" ]; then
         exit 1
     fi
 
-    TEMP_FILE="$TEST_DIR/temp.dat"
+    LEAK_PARENT="${TEST_DIR}leak_nom_parent.txt"
+    LEAK_ENFANT="${TEST_DIR}leak_nom_enfant.txt"
+    LEAK_QTE="${TEST_DIR}leak_quantite.txt"
+    LEAK_FUITE="${TEST_DIR}leak_fuite.txt"
 
-    # on filtre avec l'option (ID d'usine) passé dans l'execution du script
-    grep "$OPTION" "$DATA_FILE" | cut -d';' -f3,4,5 > "$TEMP_FILE"
+    TEMP_FILE="${TEST_DIR}temp.dat"
 
+    
+    # Ignore les lignes où le Parent ou l'Enfant est vide
+    # On remplace les "-" par "0" pour le Volume et la Fuite
+    awk -F';' '
+        NR > 1 && $2 != "-" && $3 != "-" {
+            if ($4 == "-") vol="0"; else vol=$4;
+            
+            if ($5 == "-") leak="0"; else leak=$5;
+
+            print $2";"$3";"vol";"leak;
+        }
+    ' "$DATA_FILE" > "$TEMP_FILE"
+
+    cut -d';' -f1 "$TEMP_FILE" > "$LEAK_PARENT"
+    cut -d';' -f2 "$TEMP_FILE" > "$LEAK_ENFANT"
+    cut -d';' -f3 "$TEMP_FILE" > "$LEAK_QTE"
+    cut -d';' -f4 "$TEMP_FILE" > "$LEAK_FUITE"
+    
     if [ ! -s "$TEMP_FILE" ]; then
         echo "Aucune donnée correspondante avec $OPTION"
         rm $TEMP_FILE
         exit 1
     fi
-
-    cut -d';' -f1 "$TEMP_FILE" > "$TEST_DIR/histo_nom.txt"
-    cut -d';' -f2 "$TEMP_FILE" > "$TEST_DIR/histo_quantite.txt"
     
-    awk -F';' '{
-        valeur = $3;
+    rm "$TEMP_FILE"
 
-        if (length(valeur) == 0) {
-            print "0";
-        } 
-        else {
-            print valeur;
-        }
-    }' "$TEMP_FILE" > "$TEST_DIR/histo_fuite.txt"
+    $EXECUTABLE "leaks" "$OPTION"
 
-    rm $TEMP_FILE
-
-    $EXECUTABLE "leaks"
     if [ $? -ne 0 ]; then
         echo "erreur execution du C"
         exit 1
     fi
 
-    
+    HISTORIQUE_FILE="leaks.dat"
+
+    # Fichiers résultats générés par le C
+    RES_NOM="${TEST_DIR}leak_nom_result_fuite.txt"
+    RES_QTE="${TEST_DIR}leak_quantite_result_fuite.txt"
+
+    if [ -f "$RES_QTE" ] && [ -f "$RES_NOM" ]; then
+        VALEUR=$(head -n 1 "$RES_QTE")
+        
+        if [ "$VALEUR" != "-1" ]; then
+             paste -d';' "$RES_NOM" "$RES_QTE" >> "$HISTORIQUE_FILE"
+             
+             echo "Historique mis à jour : $HISTORIQUE_FILE"
+             echo "Resultat : Volume total perdu $VALEUR M.m3"
+        else
+             echo "Resultat : Usine introuvable (non ajouté à l'historique)"
+        fi
+    fi
 fi
 
 get_time
