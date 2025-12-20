@@ -55,7 +55,7 @@ Structure de notre dépot :
 
 - Commande leaks : 
 
-    ./myscript.sh c-wildwater_v3.dat leaks "<identifiant_usine>"
+    ./myscript.sh c-wildwater_v3.dat leaks "identifiant_usine"
 
 
   
