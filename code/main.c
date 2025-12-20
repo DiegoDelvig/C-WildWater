@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "histo.h"
+#include "leaks.h"
 
 int main(int argc, char *argv[]) {
   /*
@@ -24,7 +25,11 @@ int main(int argc, char *argv[]) {
   }
 
   else if (strcmp(argv[1], "leaks") == 0) {
-    printf("A faire plus tard\n");
+    if (argc < 3) {
+      printf("ID d'unsine manquant pour la commande leaks\n");
+      return 1;
+    }
+    traiter_leaks(argv[2]);
   }
   else {
     printf("commande inconnue\n");
