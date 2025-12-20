@@ -4,11 +4,11 @@
 
 #include "histo.h"
 
-#define FILE_IN_NAME "tests/histo_nom.txt"
-#define FILE_IN_QTY "tests/histo_quantite.txt"
-#define FILE_IN_LEAK "tests/histo_fuite.txt"
+#define FILE_IN_NOM "tests/histo_nom.txt"
+#define FILE_IN_QTE "tests/histo_quantite.txt"
+#define FILE_IN_FUITE "tests/histo_fuite.txt"
 #define FILE_OUT_NOM "tests/histo_nom_result.txt"
-#define FILE_OUT_QTY "tests/histo_quantite_result.txt"
+#define FILE_OUT_QTE "tests/histo_quantite_result.txt"
 
 typedef struct Avl{
     char id[256];
@@ -22,7 +22,7 @@ typedef Avl* A;
 typedef struct {
     char id[256];
     double val;
-} Arr;
+} Tab;
 
 float min(float a, float b){
     if(a<b){
@@ -128,7 +128,7 @@ A equilibrerAVL(A a) {
     return a;
 }
 
-A insert(A avl, char *id, double val) {
+A inserer(A avl, char *id, double val) {
     if (avl == NULL) {
         return crea_noeud(val, id);
     }
@@ -136,9 +136,9 @@ A insert(A avl, char *id, double val) {
     int cmp = strcmp(id, avl->id);
 
     if (cmp < 0) {
-        avl->fg = insert(avl->fg, id, val);
+        avl->fg = inserer(avl->fg, id, val);
     } else if (cmp > 0) {
-        avl->fd = insert(avl->fd, id, val);
+        avl->fd = inserer(avl->fd, id, val);
     } else {
         avl->v += val;
         return avl;
@@ -147,57 +147,58 @@ A insert(A avl, char *id, double val) {
     return equilibrerAVL(avl);
 }
 
-void countAVL(A avl, int *count) {
+void compterAVL(A avl, int *count) {
     if (avl != NULL) {
-        countAVL(avl->fg, count);
+        compterAVL(avl->fg, count);
         (*count)++;
-        countAVL(avl->fd, count);
+        compterAVL(avl->fd, count);
     }
 }
 
-void fillArray(A avl, Arr *arr, int *index) {
+void remplirTab(A avl, Tab *tab, int *index) {
     if (avl != NULL) {
-        fillArray(avl->fg, arr, index);
-        strcpy(arr[*index].id, avl->id);
-        arr[*index].val = avl->v;
+        remplirTab(avl->fd, tab, index);
+        strcpy(tab[*index].id, avl->id);
+        // Conversion aux bonnes unités
+        tab[*index].val = avl->v / 1000.0;
         (*index)++;
-        fillArray(avl->fd, arr, index);
+        remplirTab(avl->fg, tab, index);
     }
 }
 
-void freeAvl(A avl) {
+void suprAVL(A avl) {
     if (avl != NULL) {
-        freeAvl(avl->fg);
-        freeAvl(avl->fd);
+        suprAVL(avl->fg);
+        suprAVL(avl->fd);
         free(avl);
     }
 }
 
 void traiter_histo(char *mode) {
-    printf("Traitement hist %s\n", mode);
+    printf("Traitement histo %s\n", mode);
 
-    FILE *f_name = fopen(FILE_IN_NAME, "r");
-    FILE *f_qty = fopen(FILE_IN_QTY, "r");
-    FILE *f_leak = fopen(FILE_IN_LEAK, "r");
+    FILE *f_nom = fopen(FILE_IN_NOM, "r");
+    FILE *f_qte = fopen(FILE_IN_QTE, "r");
+    FILE *f_fuite = fopen(FILE_IN_FUITE, "r");
 
-    if (!f_name || !f_qty) {
+    if (!f_nom || !f_qte) {
         printf("Impossible d'ouvrir les fichiers\n");
         exit(1);
     }
 
     A avl = NULL;
-    char bufferName[256];
-    char bufferQty[256];
-    char bufferLeak[256];
-    double qte, leak, res;
+    char bufferNom[256];
+    char bufferQte[256];
+    char bufferFuite[256];
+    double qte, fuite, res;
 
-    while (fgets(bufferName, 256, f_name) && fgets(bufferQty, 256, f_qty)) {
-        bufferName[strcspn(bufferName, "\n")] = 0;
-        qte = atof(bufferQty);
-        leak = atof(bufferLeak);
+    while (fgets(bufferNom, 256, f_nom) && fgets(bufferQte, 256, f_qte) && fgets(bufferFuite, 256, f_fuite)) {
+        bufferNom[strcspn(bufferNom, "\n")] = 0;
+        qte = atof(bufferQte);
+        fuite = atof(bufferFuite);
 
         if (strcmp(mode, "real") == 0) {
-            res = qte * (1.0 - (leak / 100.0));
+            res = qte * (1.0 - (fuite / 100.0));
 
             if (res < 0) {
                 res = 0;
@@ -205,41 +206,41 @@ void traiter_histo(char *mode) {
         } else {
             res = qte;
         }
-        avl = insert(avl, bufferName, res);
+        avl = inserer(avl, bufferNom, res);
     }
-    fclose(f_name);
-    fclose(f_qty);
-    fclose(f_leak);
+    fclose(f_nom);
+    fclose(f_qte);
+    fclose(f_fuite);
 
     int count = 0;
-    countAVL(avl, &count);
+    compterAVL(avl, &count);
 
     if (count == 0) {
         printf("Erreur\n");
         return;
     }
 
-    Arr *arr = malloc(count * sizeof(Arr));
+    Tab *tab = malloc(count * sizeof(Tab));
     int index = 0;
-    fillArray(avl, arr, &index);
+    remplirTab(avl, tab, &index);
 
-    FILE *f_res_name = fopen(FILE_OUT_NOM, "w");
-    FILE *f_res_qty = fopen(FILE_OUT_QTY, "w");
+    FILE *f_res_nom = fopen(FILE_OUT_NOM, "w");
+    FILE *f_res_qte = fopen(FILE_OUT_QTE, "w");
 
-    if (!f_res_name || !f_res_qty) {
+    if (!f_res_nom || !f_res_qte) {
         printf("Erreur dans la creation des fichiers\n");
-        free(arr);
-        freeAvl(avl);
+        free(tab);
+        suprAVL(avl);
         exit(1);
     }
 
     for (int i = 0; i < count; i++) {
-        fprintf(f_res_name, "%s\n", arr[i].id);
-        fprintf(f_res_qty, "%f\n", arr[i].val);
+        fprintf(f_res_nom, "%s\n", tab[i].id);
+        fprintf(f_res_qte, "%f\n", tab[i].val);
     }
 
-    fclose(f_res_name);
-    fclose(f_res_qty);
-    free(arr);
-    freeAvl(avl);
+    fclose(f_res_nom);
+    fclose(f_res_qte);
+    free(tab);
+    suprAVL(avl);
 }
