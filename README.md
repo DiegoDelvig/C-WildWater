@@ -42,7 +42,8 @@ Structure de notre dépot :
 - tests : fichiers crées pour pouvoir tester notre code
 - main.sh : 
 - makefile
-- Projet_C-WildWater_preIng2_2025_2026_v1.1.pdf
+- Projet_C-WildWater_preIng2_2025_2026_v1.1.pdf : énoncé du projet 
+- Rapport de projet
 
 Éxecution du programme :
 
