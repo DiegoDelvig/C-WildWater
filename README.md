@@ -41,8 +41,8 @@ Structure de notre dépot :
 - code : programmes c
 - data : fichier fourni pour tester notre programme
 - tests : fichiers crées pour pouvoir tester notre code
-- main.sh : 
-- makefile
+- main.sh : script Shell principal permettant de lancer les traitements et générer les graphiques.
+- makefile : compilation du programme C
 - Projet_C-WildWater_preIng2_2025_2026_v1.1.pdf : énoncé du projet 
 - Rapport de projet
 
