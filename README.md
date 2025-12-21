@@ -29,11 +29,12 @@ Le programme peut générer des histogrammes selon un critère unique à la fois
    
 À partir d’un identifiant d’usine :
 
-- le programme parcourt l’ensemble du réseau en aval,
-- calcule le volume total d’eau perdu,
-- retourne le résultat en millions de m³ par an.
+- le programme parcourt l’ensemble du réseau en aval, calcule le volume total d’eau perdu et retourne le résultat en millions de m³ par an.
+- Il génère ou modifie le fichier de données leaks.dat. Si le fichier existe déjà, une nouvelle ligne est ajoutée à la fin.
   
-Si l’identifiant de l’usine n’existe pas, la valeur -1 est retournée.
+  Exemple de ligne : Facility Complex #RH400057F; 12.5
+  
+  Si l’identifiant de l’usine n’existe pas, Facility Complex #INEXISTANT; -1 est affiché sur le terminal.
 
 Structure de notre dépot :
 
@@ -47,16 +48,21 @@ Structure de notre dépot :
 
 Éxecution du programme :
 
-- Compilation :
-  
+1. Rendre le fichier bash exécutable :
 
+  chmod +x main.sh
+
+2. Execution des différentes commandes :
+   
 - Commande histogrammes :
 
-    ./myscript.sh c-wildwater_v3.dat histo <critere> (max, real ou src)
+    ./main.sh data/c-wildwater_v0.dat histo <critere> (max, real ou src)
 
 - Commande leaks : 
 
-    ./myscript.sh c-wildwater_v3.dat leaks "identifiant_usine"
+    ./main.sh data/c-wildwater_v0.dat leaks "identifiant_usine"
+  
+    Exemple : ./main.sh data/c-wildwater_v0.dat leaks "Plant #JA200000I"
 
 
   
