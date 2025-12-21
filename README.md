@@ -12,7 +12,7 @@ Ce projet permet d’analyser un fichier de données décrivant un réseau de di
 
 Il combine un script Shell (point de départ de l'utilisateur) et des programmes en C pour effectuer des traitements efficaces sur de grandes quantités de données.
 
-Les résultats sont donnés sous forme de fichiers de données (CSV) et de graphiques (PNG).
+Les résultats sont donnés sous forme de fichiers de données (DAT) et de graphiques (PNG).
 
 
 Fonctionnalités : 
