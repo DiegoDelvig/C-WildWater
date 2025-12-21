@@ -38,7 +38,7 @@ Le programme peut générer des histogrammes selon un critère unique à la fois
 
 Structure de notre dépot :
 
-- code : programmes c
+- code : programmes c et points h
 - data : fichier fourni pour tester notre programme
 - tests : fichiers crées pour pouvoir tester notre code
 - main.sh : script Shell principal permettant de lancer les traitements et générer les graphiques.
