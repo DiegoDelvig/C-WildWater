@@ -33,8 +33,8 @@ generate_graphs() {
     local sorted_file="${TEST_DIR}sorted_${suffix}.dat"
     local top10_file="${TEST_DIR}top10_${suffix}.dat"
     local min50_file="${TEST_DIR}min50_${suffix}.dat"
-    local img_top10="${TEST_DIR}histo_${suffix}_top10.png"
-    local img_min50="${TEST_DIR}histo_${suffix}_min50.png"
+    local img_top10="histo_${suffix}_top10.png"
+    local img_min50="histo_${suffix}_min50.png"
 
     # 1. On trie tout en DECROISSANT d'abord (Plus grand en haut)
     sort -t';' -k2,2nr "$input_file" > "$sorted_file"
@@ -84,6 +84,14 @@ DATA_FILE="$1"
 COMMAND="$2"
 OPTION="$3"
 
+cat << "EOF"
+   ______      _       __  _  __     __  _       __        __           
+  / ____/     | |     / / (_)/ /____/ / | |     / /____ _ / /_ ___   _____
+ / /     ____ | | /| / / / // // __  /  | | /| / // __ `// __// _ \ / ___/
+/ /___  /___/ | |/ |/ / / // // /_/ /   | |/ |/ // /_/ // /_ /  __// /    
+\____/        |__/|__/ /_//_/ \__,_/    |__/|__/ \__,_/ \__/ \___//_/
+EOF
+
 if [ -z "$DATA_FILE" ] || [ -z "$COMMAND" ]; then
     show_help
 fi
@@ -109,10 +117,10 @@ else
     exit 1
 fi
 
-if [ $COMMAND == "histo" ]; then
-    if [ $OPTION != "src" ] && [ $OPTION != "real" ] && [ $OPTION != "max" ]; then
+if [ "$COMMAND" == "histo" ]; then
+    if [ "$OPTION" != "src" ] && [ "$OPTION" != "real" ] && [ "$OPTION" != "max" ]; then
         show_help
-    elif [ $OPTION == "max" ]; then       
+    elif [ "$OPTION" == "max" ]; then       
         ALL_USINES_FILE="${TEST_DIR}usines_all.dat"
         
         # Colonne 1 et 3 '-'
@@ -162,7 +170,7 @@ if [ $COMMAND == "histo" ]; then
         generate_graphs "$MIXED_FILE" "$OPTION" "Volume (M.m3)" "Volume $OPTION"
     fi
 
-elif [ $COMMAND == "leaks" ]; then
+elif [ "$COMMAND" == "leaks" ]; then
     if [ -z "$OPTION" ]; then
         echo "Erreur : Il faut préciser un filtre pour leaks"  
         exit 1
