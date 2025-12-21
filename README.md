@@ -62,7 +62,7 @@ Structure de notre dépot :
 
     ./main.sh data/c-wildwater_v0.dat leaks "identifiant_usine"
   
-    Exemple : ./main.sh data/c-wildwater_v0.dat leaks "Plant #JA200000I"
+    Exemple : ./main.sh data/c-wildwater_v0.dat leaks "Plant #JN300086T"
 
 
   
