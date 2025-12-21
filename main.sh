@@ -128,7 +128,7 @@ if [ "$COMMAND" == "histo" ]; then
         # A faire Verifier si on peut utiliser sort
         awk -F';' '$1 == "-" && $3 == "-" && $5 == "-" {print $2";"$4}' "$DATA_FILE" > "$ALL_USINES_FILE"
     
-        generate_graphs "$ALL_USINES_FILE" "$OPTION" "Capacité (m3)" "Capacité max" 
+        generate_graphs "$ALL_USINES_FILE" "$OPTION" "Capacité (M.m3)" "Capacité max" 
 
     elif [ "$OPTION" == "src" ] || [ "$OPTION" == "real" ]; then
         TEMP_FILE="${TEST_DIR}temp.dat"
