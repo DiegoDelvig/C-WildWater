@@ -51,8 +51,10 @@ Structure de notre dépot :
 1. Rendre le fichier bash exécutable :
 
      chmod +x main.sh
+   
+3. On compile le programme C avec la commande make
 
-2. Execution des différentes commandes :
+4. Execution des différentes commandes :
    
 - Commande histogrammes :
 
