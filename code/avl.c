@@ -121,3 +121,18 @@ void suprAvl(A avl) {
     }
 }
 
+A researche(A a, char* id){
+    if(a == NULL){
+        return NULL;
+    }
+
+    if(strcmp(a->id,id) == 0){
+        return a;
+    }
+
+    if(strcmp(a->id,id) > 0){
+        return researche(a->fg, id);
+    } else {
+        return researche(a->fd, id);
+    }
+}

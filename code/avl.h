@@ -39,9 +39,6 @@ A doubleRotationGauche(A a);
 A equilibrerAvl(A a);
 void compterAvl(A avl, int *count);
 void suprAvl(A avl);
-
-
-
-
+A researche(A a, char* id);
 
 #endif

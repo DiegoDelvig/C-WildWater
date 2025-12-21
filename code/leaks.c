@@ -39,7 +39,7 @@ A avl_crea_noeud(float val, char* id, Ab parent, float fuite, int cas){
     return new_avl;
 }
 
-A insertionAVL(A a, char* id, float val, float fuite, int *h, Ab parent, int cas, A* retour){
+A insertionAvl(A a, char* id, float val, float fuite, int *h, Ab parent, int cas, A* retour){
     if(a == NULL){
         *h = 1;
         A new = avl_crea_noeud(val, id, parent, fuite, cas);
@@ -59,10 +59,10 @@ A insertionAVL(A a, char* id, float val, float fuite, int *h, Ab parent, int cas
         return a;
     }
     else if(cmp < 0){
-        a->fg = insertionAVL(a->fg, id, val, fuite, h, parent, cas, retour);
+        a->fg = insertionAvl(a->fg, id, val, fuite, h, parent, cas, retour);
         *h = -*h;
     } else {
-        a->fd = insertionAVL(a->fd, id, val, fuite, h, parent, cas, retour);
+        a->fd = insertionAvl(a->fd, id, val, fuite, h, parent, cas, retour);
     } 
     if(*h != 0){
         a->eq = a->eq + *h;
@@ -84,23 +84,6 @@ void supp_fixe(A a){
         supp_fixe(a->fd);
         free(a->ab);
         free(a);
-    }
-}
-
-// Ajouter à avl.c
-A researche(A a, char* id){
-    if(a == NULL){
-        return NULL;
-    }
-
-    if(strcmp(a->id,id) == 0){
-        return a;
-    }
-
-    if(strcmp(a->id,id) > 0){
-        return researche(a->fg, id);
-    } else {
-        return researche(a->fd, id);
     }
 }
 
@@ -172,10 +155,10 @@ void traiter_leaks(char *idUsine) {
         id_enfant[strcspn(id_enfant, "\n")] = 0; 
         id_enfant[strcspn(id_enfant, "\r")] = 0; 
         
-        avl=insertionAVL(avl, id_parent, nb, fuites, &h, NULL, 1, &pparent);
+        avl=insertionAvl(avl, id_parent, nb, fuites, &h, NULL, 1, &pparent);
 
         if(pparent != NULL){
-            avl = insertionAVL(avl, id_enfant, nb, fuites, &h, pparent->ab, 2, NULL);
+            avl = insertionAvl(avl, id_enfant, nb, fuites, &h, pparent->ab, 2, NULL);
         }
     }
 
@@ -187,11 +170,8 @@ void traiter_leaks(char *idUsine) {
         write_leak_res(idUsine, somme / 1000.0, result_nom, result_val);
     } else {
         printf("Usine %s introuvable dans les données filtrées\n", idUsine);
-        supp_fixe(avl);
-        fclose(nom_parent); fclose(nom_enfant);
-        fclose(val); fclose(fuite);
-        fclose(result_nom); fclose(result_val);
-        exit(-1);
+        fprintf(result_nom, "%s\n", idUsine);
+        fprintf(result_val, "-1\n");
     }
 
     supp_fixe(avl);
