@@ -50,7 +50,7 @@ Structure de notre dépot :
 
 1. Rendre le fichier bash exécutable :
 
-  chmod +x main.sh
+     chmod +x main.sh
 
 2. Execution des différentes commandes :
    
