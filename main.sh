@@ -63,7 +63,7 @@ generate_graphs() {
         # Graphique Min 50
         set output '$img_min50'
         set title "50 plus petites usines : $title_context"
-        set xlabel "Usines (50 plus petites)"
+        set xlabel "Usines"
         set xtics rotate by -45 scale 0
         plot "$min50_file" using 2:xtic(1) title "$title_context" linecolor rgb "#DC143C"
 EOF
