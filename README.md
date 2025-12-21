@@ -41,7 +41,7 @@ Structure de notre dépot :
 - code : programmes c et points h
 - data : fichier fourni pour tester notre programme
 - exemple : fichier contenant les images de nos histogrammes et d'un test de la commande leaks avec une usine
-- tests : fichiers crées pour pouvoir tester notre code
+- tests : fichiers créés pour pouvoir tester notre code
 - main.sh : script Shell principal permettant de lancer les traitements et générer les graphiques.
 - makefile : compilation du programme C
 - Projet_C-WildWater_preIng2_2025_2026_v1.1.pdf : énoncé du projet 
