@@ -47,10 +47,6 @@ generate_graphs() {
     gnuplot <<- EOF
         set terminal pngcairo size 1200,800 font "Arial,10"
         set datafile separator ";"
-        set key outside top right
-        set lmargin 15
-        set offset 0,0,0.05,0
-        set format y "%s.0f"
         set style data histograms
         set style fill solid 1.0 border -1
         set boxwidth 0.7 relative
