@@ -41,7 +41,7 @@ generate_graphs() {
 
     # 2. On extrait et on inverse (sort -n) pour que le graph monte vers la droite
     head -n 10 "$sorted_file" | sort -t';' -k2,2n > "$top10_file"
-    tail -n 50 "$sorted_file" | sort -t';' -k2,2n > "$min50_file"
+    tail -n 49 "$sorted_file" | sort -t';' -k2,2n > "$min50_file"
 
     # 3. Gnuplot générique
     gnuplot <<- EOF
