@@ -52,8 +52,6 @@ generate_graphs() {
         set boxwidth 0.7 relative
         set ylabel "$ylabel"
         set grid y
-        set offset 0.5, 0.5, 0, 0
-        set auto x
 
         # Graphique Top 10
         set output '$img_top10'
