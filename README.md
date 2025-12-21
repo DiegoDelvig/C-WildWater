@@ -40,6 +40,7 @@ Structure de notre dépot :
 
 - code : programmes c et points h
 - data : fichier fourni pour tester notre programme
+- exemple : fichier contenant les images de nos histogrammes 
 - tests : fichiers crées pour pouvoir tester notre code
 - main.sh : script Shell principal permettant de lancer les traitements et générer les graphiques.
 - makefile : compilation du programme C
